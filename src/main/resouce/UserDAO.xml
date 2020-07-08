@@ -1,0 +1,69 @@
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="lig.DAO.UserDAO">
+    <resultMap id="myResultMap" type="lig.DAO.UserEntity">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="address" property="address"/>
+        <result column="age" property="age"/>
+        <result column="beizhu" property="beizhu"/>
+    </resultMap>
+    <!--下面是返回resultMap的示例，这里可以返回多条记录,其实就是更加灵活的定义字段匹配关系。-->
+    <select id="getAllUsersByResultMap" resultMap="myResultMap">
+            <![CDATA[
+            select * from users  where id <100
+            ]]>
+    </select>
+
+
+    <!--下面是返回MAP的示例，注意啊，这里只能返回一条记录。-->
+    <select id="getAllUsersByMap" resultType="java.util.Map">
+            <![CDATA[
+            select * from users  where id <100 order by id limit 1
+            ]]>
+    </select>
+    <!--下面是like测试。-->
+    <select id="getAllUsersAsLike" resultType="lig.DAO.UserEntity">
+            <![CDATA[
+            select * from users  where name like #{name}
+            ]]>
+    </select>
+    <select id="getAllUsers" resultType="lig.DAO.UserEntity">
+            select * from users order by id
+    </select>
+    <select id="getUsersCount" resultType="java.lang.Integer">
+        select count(1) from  users
+    </select>
+
+    <select id="getUsersByIds" resultType="lig.DAO.UserEntity" parameterType="java.lang.Integer">
+
+        <![CDATA[
+            select * from users where id>#{ids} and id<#{idm} order by id desc
+            ]]>
+    </select>
+
+    <select id="getUsersByNames" resultType="lig.DAO.UserEntity" parameterType="java.lang.Integer">
+        <![CDATA[
+            select * from users where name=#{name1,javaType=java.lang.String,jdbcType=VARCHAR} or name=#{name2,javaType=java.lang.String,jdbcType=VARCHAR} order by id desc
+            ]]>
+    </select>
+<!--测试sql注入的一个例子-->
+    <select id="getOneUserByName" resultType="lig.DAO.UserEntity" parameterType="java.lang.String">
+        <![CDATA[
+            select * from users where name ='${name}' limit 1
+            ]]>
+    </select>
+
+    <select id="getOneUser" resultType="lig.DAO.UserEntity" parameterType="java.lang.Integer" >
+        select * from users where id=#{id}
+    </select>
+
+    <insert id="insertUser">
+        insert into users (name,address,age,beizhu) values  (#{name},#{address},#{age},#{beizhu})
+    </insert>
+
+    <delete id="deleteUser">
+        delete from users where id=#{id}
+    </delete>
+</mapper>
